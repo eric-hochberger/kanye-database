@@ -1,4 +1,5 @@
 # Kanye Scraping Final 
+#install.packages(c("rvest", "tidyverse", "janitor", "rlist", "rjson", "tidyjson", "jsonlite", "dbConnect", "tools", "RSQLite"))
 
 library(rvest)
 library(tidyverse)
@@ -8,8 +9,8 @@ library(rjson)
 library(tidyjson)
 library(jsonlite)
 library(dbConnect)
-library(assertthat)
 library(tools)
+
 
 
 
@@ -19,7 +20,7 @@ library(tools)
 album_titles_text <- c("The-college-dropout", 
                        "Late-registration", 
                        "Graduation", "808s-heartbreak", "My-beautiful-dark-twisted-fantasy", 
-                       "Yeezus", "The-life-of-pablo", "Ye")
+                       "Yeezus", "The-life-of-pablo", "Ye", "Jesus-is-king")
 
 
 
@@ -29,17 +30,19 @@ mydb <- dbConnect(RSQLite::SQLite(), "my-db2.sqlite")
 
 for (l in album_titles_text) {
   
+  
+  
   album_url <- paste('https://genius.com/albums/Kanye-west/', l, sep = "")
-  album_webpage <- read_html(album_url)
-  album_songs_data <- html_nodes(album_webpage, '.chart_row-content-title')
-  album_songs_text <- html_text(album_songs_data) %>% 
-    trimws()
-  album_songs_text <- gsub("\n", " ", album_songs_text)
-  album_songs_text <- gsub("Lyrics", " ", album_songs_text) %>% 
-    trimws()
-  album_songs_text <- as.data.frame(album_songs_text)
-  album_songs_text <- make_clean_names(album_songs_text$album_songs_text)
-  album_songs_text <- gsub("_", "-", album_songs_text)
+  
+  album_songs_text <- album_url %>% read_html() %>% html_nodes('.chart_row-content-title') %>% html_text() %>% 
+    trimws() %>% 
+    str_replace_all("Lyrics", " ") %>% 
+    str_replace_all("\n", " ") %>% 
+    trimws() %>% 
+    make_clean_names() %>% 
+    str_replace_all("_", "-")
+  
+  
   
   for(i in album_songs_text){
     url <- paste("https://genius.com/Kanye-west-", i, sep = "") %>% 
@@ -68,14 +71,16 @@ for (l in album_titles_text) {
       
       url <- "https://genius.com/Kanye-west-the-life-of-pablo-credits-annotated"
     } 
-      webpage <- read_html(url)
-      producer_data <-  html_nodes(webpage, "meta[itemprop='page_data']") #Access page metadata
-      producer_json <- html_attr(producer_data, "content") #Render metadata as JSON
-      producer_non_json <- fromJSON(producer_json) #Render metadata as accessible R object
     
-        n <- length(producer_non_json$song$producer_artists$name)
-        k <- length(producer_non_json$song$song_relationships$songs[[1]]$primary_artist$name) # Isolate number of samples the song contains
-        q <- length(producer_non_json$song$featured_artists$name) # Isolate number of Featured Artists
+    
+      webpage <- read_html(url) %>% 
+        html_nodes("meta[itemprop='page_data']") %>% #Access page metadata
+        html_attr("content") %>% #Render metadata as JSON
+        fromJSON() #Render metadata as accessible R object
+    
+        n <- length(webpage$song$producer_artists$name) #Isolate number of producers
+        k <- length(webpage$song$song_relationships$songs[[1]]$primary_artist$name) # Isolate number of samples the song contains
+        q <- length(webpage$song$featured_artists$name) # Isolate number of Featured Artists
     
     
 
@@ -84,8 +89,8 @@ for (l in album_titles_text) {
     if (k > 0) {
       for (m in 1:k) {
         query <- dbSendStatement(mydb, paste("INSERT INTO Samples (Sample_Name, Sample_Artist) VALUES ('",
-                                             producer_non_json$song$song_relationships$songs[[1]]$title[m], "', '",
-                                             producer_non_json$song$song_relationships$songs[[1]]$primary_artist$name[m], "');", sep = ""))
+                                             webpage$song$song_relationships$songs[[1]]$title[m], "', '",
+                                             webpage$song$song_relationships$songs[[1]]$primary_artist$name[m], "');", sep = ""))
         query
         dbClearResult(query)
 
@@ -97,7 +102,7 @@ for (l in album_titles_text) {
     if (q >0) {
       for (s in 1:q)
         query <- dbSendStatement(mydb, paste("INSERT INTO Features (Feature_Artist_Name) VALUES ('",
-                                             producer_non_json$song$featured_artists$name[s], "');", sep = ""))
+                                             webpage$song$featured_artists$name[s], "');", sep = ""))
       query
       dbClearResult(query)
     }
@@ -106,16 +111,16 @@ for (l in album_titles_text) {
 # Insert song’s “producer” information into database ----------------------
 
     for (j in 1:n) {
-      query <- dbSendStatement(mydb, paste("INSERT INTO Producers(Producer_Name) VALUES ('",
-                                           producer_non_json$song$producer_artists$name[[j]], "');", sep = ""))
+      query <- dbSendStatement(mydb, paste("INSERT INTO Producers (Producer_Name) VALUES ('",
+                                           webpage$song$producer_artists$name[[j]], "');", sep = ""))
       query
       dbClearResult(query)
     }
    # Song Loop
     query <- dbSendStatement(mydb, paste("INSERT INTO Song (Song_Name, Album_Name, Year_Released) VALUES ('",
-                                         producer_non_json$song$title, "', '",
-                                         producer_non_json$song$album$name, "', '",
-                                         producer_non_json$song$release_date_components$year, "');", sep = ""))
+                                         webpage$song$title, "', '",
+                                         webpage$song$album$name, "', '",
+                                         webpage$song$release_date_components$year, "');", sep = ""))
     query
     dbClearResult(query)
 
@@ -124,8 +129,8 @@ for (l in album_titles_text) {
     # Song_Producers Loop
     for (j in 1:n) {
       query <- dbSendStatement(mydb, paste("INSERT INTO Song_Producers_temp (Producer_Name, Song_Name) VALUES ('",
-                                           producer_non_json$song$producer_artists$name[[j]], "', '",
-                                           producer_non_json$song$title, "');", sep = ""))
+                                           webpage$song$producer_artists$name[[j]], "', '",
+                                           webpage$song$title, "');", sep = ""))
       query
       dbClearResult(query)
     }
@@ -134,9 +139,9 @@ for (l in album_titles_text) {
     if (k > 0) {
         for (m in 1:k) {
           query <- dbSendStatement(mydb, paste("INSERT INTO Song_Samples_temp (Song_Name, Sample_Name, Sample_Artist) VALUES ('",
-                                               producer_non_json$song$title, "', '",
-                                               producer_non_json$song$song_relationships$songs[[1]]$title[m], "', '",
-                                               producer_non_json$song$song_relationships$songs[[1]]$primary_artist$name[m], "');", sep = ""))
+                                               webpage$song$title, "', '",
+                                               webpage$song$song_relationships$songs[[1]]$title[m], "', '",
+                                               webpage$song$song_relationships$songs[[1]]$primary_artist$name[m], "');", sep = ""))
           query
           dbClearResult(query)
 
@@ -146,10 +151,11 @@ for (l in album_titles_text) {
     if (q >0) {
       for (s in 1:q)
         query <- dbSendStatement(mydb, paste("INSERT INTO Song_Features_temp (Song_Name, Feature_Artist_Name) VALUES ('",
-                                             producer_non_json$song$title, "', '",
-                                             producer_non_json$song$featured_artists$name[s], "');", sep = ""))
+                                             webpage$song$title, "', '",
+                                             webpage$song$featured_artists$name[s], "');", sep = ""))
       query
       dbClearResult(query)
+      
     } #End of for-loop
   } #End of if-statement
 } #End of album_titles_text for-loop
