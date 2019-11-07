@@ -6,7 +6,6 @@ library(tidyverse)
 library(janitor)
 library(rlist)
 library(rjson)
-#library(tidyjson)
 library(jsonlite)
 library(dbConnect)
 library(tools)
@@ -88,7 +87,7 @@ for (l in album_titles_text) {
 
     if (k > 0) {
       for (m in 1:k) {
-        query <- dbSendStatement(mydb, paste("INSERT INTO Samples (Sample_Name, Sample_Artist) VALUES ('",
+        query <- dbSendStatement(mydb, paste("INSERT INTO Samples_temp (Sample_Name, Sample_Artist) VALUES ('",
                                              webpage$song$song_relationships$songs[[1]]$title[m], "', '",
                                              webpage$song$song_relationships$songs[[1]]$primary_artist$name[m], "');", sep = ""))
         query
@@ -101,7 +100,7 @@ for (l in album_titles_text) {
 # Insert song’s "featured artist” information into database ---------------
     if (q >0) {
       for (s in 1:q)
-        query <- dbSendStatement(mydb, paste("INSERT INTO Features (Feature_Artist_Name) VALUES ('",
+        query <- dbSendStatement(mydb, paste("INSERT INTO Features_temp (Feature_Artist_Name) VALUES ('",
                                              webpage$song$featured_artists$name[s], "');", sep = ""))
       query
       dbClearResult(query)
@@ -111,7 +110,7 @@ for (l in album_titles_text) {
 # Insert song’s “producer” information into database ----------------------
 
     for (j in 1:n) {
-      query <- dbSendStatement(mydb, paste("INSERT INTO Producers (Producer_Name) VALUES ('",
+      query <- dbSendStatement(mydb, paste("INSERT INTO Producers_temp (Producer_Name) VALUES ('",
                                            webpage$song$producer_artists$name[[j]], "');", sep = ""))
       query
       dbClearResult(query)
