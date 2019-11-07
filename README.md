@@ -14,7 +14,7 @@ This was my final project for Northwestern University's EECS 317: Data Managemen
 ![Screen Shot 2019-11-07 at 12 28 56 PM](https://user-images.githubusercontent.com/55408707/68416564-543a1b00-015a-11ea-9555-46912775708d.png)
 
 ### Final Database
-![Screen Shot 2019-11-07 at 1 07 37 PM](https://user-images.githubusercontent.com/55408707/68419341-a6ca0600-015f-11ea-82c6-8e893cce7735.png)
+![Screen Shot 2019-11-07 at 1 54 18 PM](https://user-images.githubusercontent.com/55408707/68422621-29ee5a80-0166-11ea-81cc-cd64299d6fcf.png)
 
 ![Screen Shot 2019-11-07 at 1 07 19 PM](https://user-images.githubusercontent.com/55408707/68419360-b2b5c800-015f-11ea-83be-b842c76f4134.png)
 
