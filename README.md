@@ -19,7 +19,7 @@ This was my final project for Northwestern University's EECS 317: Data Managemen
 ![Screen Shot 2019-11-07 at 1 07 19 PM](https://user-images.githubusercontent.com/55408707/68419360-b2b5c800-015f-11ea-83be-b842c76f4134.png)
 
 
-##Appendix
+## Appendix
 
 ### SQL CREATE TABLE Commands
 
