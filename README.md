@@ -1,6 +1,6 @@
 ## Kanye West Database in SQLite
 
-The R file provided will scrape Genius.com and load the data into the accompanying template database, provided you have downloaded DB Browser for SQLite. All that remains to complete the database is to run the SQL INSERT commands at the bottom of this doc. The model of the database is below along with a sample (ha-ha) of what my final database looked like. The database can be used to answer questions like: "Which producer has Kanye collaborated with most?" (Mike Dean) and "Which artist has been sampled most frequently in Kanye's songs?" (Gil Scott-Heron).
+The R file provided will scrape Genius.com and load the data into the accompanying template database, provided you have downloaded DB Browser for SQLite. All that remains to complete the database is to run the SQL INSERT commands at the bottom of this doc. The model of the database is below along with a sample of what my final database looked like. The database can be used to answer questions like: "Which producer has Kanye collaborated with most?" (Mike Dean) and "Which artist has been sampled most frequently in Kanye's songs?" (Gil Scott-Heron).
 This was my final project for Northwestern University's EECS 317: Data Management and Information Processing. Enjoy!
 
 
@@ -12,6 +12,11 @@ This was my final project for Northwestern University's EECS 317: Data Managemen
 
 ### Entity Relationship Diagram
 ![Screen Shot 2019-11-07 at 12 28 56 PM](https://user-images.githubusercontent.com/55408707/68416564-543a1b00-015a-11ea-9555-46912775708d.png)
+
+### Final Database
+![Screen Shot 2019-11-07 at 1 07 37 PM](https://user-images.githubusercontent.com/55408707/68419341-a6ca0600-015f-11ea-82c6-8e893cce7735.png)
+
+![Screen Shot 2019-11-07 at 1 07 19 PM](https://user-images.githubusercontent.com/55408707/68419360-b2b5c800-015f-11ea-83be-b842c76f4134.png)
 
 
 ### SQL INSERT Commands
